@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
 import MoviesList from './components/MoviesList'
 import './App.css'
@@ -6,9 +6,10 @@ import './App.css'
 function App() {
   const [movies, setMovies] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  // by default Fetch API does not throw a real error on unsuccessful status code
   const [error, setError] = useState(null)
 
-  async function fetchMoviesHandler() {
+  const fetchMoviesHandler = useCallback(async () => {
     setIsLoading(true)
     // clear any previous errors we may have gotten
     setError(null)
@@ -33,7 +34,12 @@ function App() {
       setError(error.message)
     }
     setIsLoading(false)
-  }
+  }, [])
+
+  // send http req immediadely when component loads not just when button is clicked
+  useEffect(() => {
+    fetchMoviesHandler()
+  }, [fetchMoviesHandler])
 
   let content = <p>Found no movies.</p>
 
